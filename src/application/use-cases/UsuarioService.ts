@@ -8,6 +8,8 @@ import { validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 import { ViewModelToDomain } from "../../shared/utils/Usuario/ViewModelToDomain"
 
+import { BCrypter } from '../../shared/utils/Encrypter/BCrypter'
+
 @injectable()
 export class UsuarioService implements IUsuarioService {
 
@@ -21,6 +23,8 @@ export class UsuarioService implements IUsuarioService {
             await this.verifyErrors(usuario);
 
             var usuarioDomain = ViewModelToDomain.toDomain(usuario);
+
+            usuarioDomain.senha = await BCrypter.hash(usuario.senha)
 
             await this.usuarioRepository.insert(usuarioDomain)
         } catch (error: any) {

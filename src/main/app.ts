@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "reflect-metadata";
 import "../infrastructure/Ioc/container"
 import express from 'express';
