@@ -26,4 +26,22 @@ export class UsuarioController {
             });
         }
     }
+
+    async login(req: Request, res: Response) {
+        try {
+            const data = req.body;
+
+            var token = await this.usuarioService.login(data?.email, data?.senha);
+
+            return res.status(201).json({
+                message: token
+            });
+
+        } catch (error: any) {
+            return res.status(500).json({
+                message: "Erro interno no servidor",
+                error: error.message
+            });
+        }
+    }
 }

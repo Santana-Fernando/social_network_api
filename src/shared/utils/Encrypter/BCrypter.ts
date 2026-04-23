@@ -14,7 +14,7 @@ export class BCrypter {
   public static async compare(
     plainText: string,
     hashed: string
-  ): Promise<boolean> {
+  ): Promise<boolean> {     
     if (!plainText || !hashed) {
       throw new Error("Invalid parameters for password comparison");
     }

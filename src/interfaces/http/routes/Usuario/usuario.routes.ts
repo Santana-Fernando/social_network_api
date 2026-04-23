@@ -39,4 +39,31 @@ const controller = container.resolve(UsuarioController);
  */
 router.post('/cadastro', (req, res) => controller.insert(req, res));
 
+/**
+ * @openapi
+ * /usuarios/login :
+ *   post:
+ *     summary: Cria um usuário
+ *     description: Cria um novo usuário no sistema
+ *     tags:
+ *       - Usuários
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               senha:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Sucesso no login
+ *       500:
+ *         description: Erro interno
+ */
+router.post('/login', (req, res) => controller.login(req, res));
+
 export default router;

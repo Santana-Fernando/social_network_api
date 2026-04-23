@@ -9,6 +9,7 @@ import { plainToInstance } from "class-transformer";
 import { ViewModelToDomain } from "../../shared/utils/Usuario/ViewModelToDomain"
 
 import { BCrypter } from '../../shared/utils/Encrypter/BCrypter'
+import { JwtService } from "../../shared/utils/Jwt/JwtService";
 
 @injectable()
 export class UsuarioService implements IUsuarioService {
@@ -17,6 +18,28 @@ export class UsuarioService implements IUsuarioService {
         @inject("IUsuario")
         private usuarioRepository: IUsuario
     ) {}
+
+      async login(email: string, senha: string): Promise<string> {
+
+        const usuario = await this.usuarioRepository.findByEmail(email);
+
+        if (!usuario) {
+        throw new Error("Usuário não encontrado");
+        }
+
+        const senhaValida = await BCrypter.compare(senha, usuario.senha);
+
+        if (!senhaValida) {
+        throw new Error("Senha inválida");
+        }
+
+        const token = JwtService.generateToken({
+        id: usuario.id,
+        email: usuario.email
+        });
+
+        return token;
+  }
 
     async insert(usuario: UsuarioViewModel): Promise<void> {
         try {
