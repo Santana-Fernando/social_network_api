@@ -25,7 +25,6 @@ export function authMiddleware(
 
     req.user = decoded;
 
-    req.body.autorId = req.user.id;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Token inválido" });
