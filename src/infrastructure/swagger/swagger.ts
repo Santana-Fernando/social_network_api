@@ -8,6 +8,15 @@ export const swaggerSpec = swaggerJSDoc({
       version: "1.0.0",
       description: "API de usuários",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    }
   },
   apis: ["dist/interfaces/http/routes/**/*.js"], // onde estão suas rotas
 });

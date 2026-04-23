@@ -8,16 +8,27 @@ import { UsuarioService } from "../../application/use-cases/UsuarioService";
 
 import { AppDataSource } from "../database/data-source";
 import { UsuarioEntity } from "../database/entities/UsuarioEntity";
+import { PostRepository } from "../database/repositories/PostRepository";
+import { IPost } from "../../domain/interface/IPost";
+import { PostEntity } from "../database/entities/PostEntity";
+import { IPostService } from "../../application/interface/IPostService";
+import { PostService } from "../../application/use-cases/PostService";
 
-// TypeORM repo
-const typeOrmRepo = AppDataSource.getRepository(UsuarioEntity);
+const typeOrmRepoUser = AppDataSource.getRepository(UsuarioEntity);
+const typeOrmRepoPost = AppDataSource.getRepository(PostEntity);
 
-// Repository
 container.register<IUsuario>("IUsuario", {
-  useValue: new UsuarioRepository(typeOrmRepo),
+  useValue: new UsuarioRepository(typeOrmRepoUser),
 });
 
-// Service
 container.register<IUsuarioService>("IUsuarioService", {
   useClass: UsuarioService,
+});
+
+container.register<IPost>("IPost", {
+  useValue: new PostRepository(typeOrmRepoPost),
+});
+
+container.register<IPostService>("IPostService", {
+  useClass: PostService,
 });

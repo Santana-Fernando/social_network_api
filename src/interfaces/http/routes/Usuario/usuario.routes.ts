@@ -43,8 +43,8 @@ router.post('/cadastro', (req, res) => controller.insert(req, res));
  * @openapi
  * /usuarios/login :
  *   post:
- *     summary: Cria um usuário
- *     description: Cria um novo usuário no sistema
+ *     summary: Login
+ *     description: Cria um token de acesso para um determinado usuário
  *     tags:
  *       - Usuários
  *     requestBody:

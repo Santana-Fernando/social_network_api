@@ -9,8 +9,4 @@ export class JwtService {
       expiresIn: "1d"
     });
   }
-
-  static verifyToken(token: string): any {
-    return jwt.verify(token, SECRET);
-  }
 }
