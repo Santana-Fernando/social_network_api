@@ -21,6 +21,42 @@ export class PostService implements IPostService {
         private likeRepository: ILike
     ) {}
 
+    async findByAutor(idAutor: number): Promise<PostViewModel[] | null> {
+        const cacheKey = `posts:autor:${idAutor}`;
+
+        try {
+            const cached = await redisClient.get(cacheKey);
+
+            if (cached) {
+            return JSON.parse(cached);
+            }
+        } catch (err) {
+            console.error('Redis GET error:', err);
+        }
+
+        const posts = await this.postRepository.findByAutor(idAutor);
+
+        if (!posts) {
+            return null;
+        }
+
+        const postsViewModel = posts.map(post =>
+            DomainToViewModel.toViewModel(post)
+        );
+
+        try {
+            await redisClient.set(
+            cacheKey,
+            JSON.stringify(postsViewModel),
+            { EX: 60 }
+            );
+        } catch (err) {
+            console.error('Redis SET error:', err);
+        }
+
+        return postsViewModel;
+    }
+
     async findAll(): Promise<PostViewModel[]> {
         const cacheKey = 'posts:all';
 
@@ -138,6 +174,7 @@ export class PostService implements IPostService {
             await redisClient.del('posts:all');
             await redisClient.del('posts:top-liked');
             await redisClient.del(`posts:${post.id}`);
+            await redisClient.del(`posts:autor:${idAutor}`);
 
             await this.likeRepository.deslike(idAutor, id)
             await this.postRepository.delete(id);
@@ -161,6 +198,7 @@ export class PostService implements IPostService {
             await redisClient.del('posts:all');
             await redisClient.del('posts:top-liked');
             await redisClient.del(`posts:${postFinded.id}`);
+            await redisClient.del(`posts:autor:${postFinded.autorId}`);
 
             await this.postRepository.update(post);
         } catch (error: any) {
@@ -175,7 +213,7 @@ export class PostService implements IPostService {
             var postDomain = ViewModelToDomain.toDomain(post);
             
             await redisClient.del('posts:all');
-            await redisClient.del('posts:top-liked');
+            await redisClient.del('posts:top-liked');   
             await this.postRepository.insert(postDomain)
         } catch (error: any) {
             throw new Error(error.message || 'Erro ao criar post');

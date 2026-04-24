@@ -87,6 +87,23 @@ router.get('/listagem/:id', (req, res) => controller.findById(req, res));
 
 /**
  * @openapi
+ * /post/listagem_meu_perfil:
+ *   get:
+ *     summary: Buscar post por Autor
+ *     tags:
+ *       - Postagens
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Post encontrado
+ *       404:
+ *         description: Post não encontrado
+ */
+router.get('/listagem_meu_perfil', authMiddleware, (req, res) => controller.findByAutor(req, res));
+
+/**
+ * @openapi
  * /post/remover/{id}:
  *   delete:
  *     summary: Deletar post

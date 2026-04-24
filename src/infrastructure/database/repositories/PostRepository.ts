@@ -7,6 +7,33 @@ import { EntityToDomain } from "../../../shared/utils/Post/EntityToDomain";
 export class PostRepository implements IPost {
 
     constructor(private readonly repo: Repository<PostEntity>) {}
+
+    async findByAutor(idAutor: number): Promise<Post[]> {
+        const { raw, entities } = await this.repo
+            .createQueryBuilder('post')
+            .leftJoin('likes', 'l', 'l.post_id = post.id')
+            .select([
+            'post.id',
+            'post.titulo',
+            'post.conteudo',
+            'post.autor_id',
+            'post.data_cadastro',
+            'post.data_atualizacao'
+            ])
+            .addSelect('COUNT(l.post_id)', 'likes_count')
+            .where('post.autor_id = :idAutor', { idAutor })
+            .groupBy('post.id')
+            .getRawAndEntities();
+
+        return entities.map((entity, index) => {
+            const likesCount = Number(raw[index].likes_count);
+
+            return {
+            ...EntityToDomain.toPost(entity),
+            likesCount
+            };
+        });
+    }
     
     async findAll(): Promise<Post[]> {
         const { raw, entities } = await this.repo
