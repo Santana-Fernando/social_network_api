@@ -1,6 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import { ILikeService } from "../../../application/interface/ILikeService";
 import { Request, Response } from "express";
+import { LikeProducer } from '../../../application/queue/LikeProducer';
 
 @injectable()
 export class LikeController {
@@ -9,12 +10,16 @@ export class LikeController {
         private likeService: ILikeService
     ) {}
 
+    private producer = new LikeProducer();
+
     async like(req: Request, res: Response) {
         try {
             const { postId } = req.body;
             const autorId = (req as any).user?.id;
             
             await this.likeService.like(autorId, postId);
+
+            await this.producer.sendLike({ postId, autorId });
 
             return res.status(201).json({
                 message: "Curtido"

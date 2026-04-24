@@ -14,6 +14,9 @@ export class LikeService implements ILikeService {
         try {
             await this.likeRepository.like(autorId, postId);
         } catch (error: any) {
+            if (error.code === '23505') {
+                return;
+            }
             throw new Error(error.message || 'Erro ao dar like');
         }
     }

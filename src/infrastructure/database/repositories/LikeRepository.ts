@@ -17,7 +17,10 @@ export class LikeRepository implements ILike {
             post_id: postId,
             data_cadastro: new Date()
         });
-        console.log("chegou na parte do repository")
+
+        const likes = await this.repo.find({ where: { autor_id: autorId, post_id: postId }});
+
+        if(likes.length > 0) return;
 
         await this.repo.save(like);
     }
