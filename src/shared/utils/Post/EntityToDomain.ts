@@ -10,7 +10,6 @@ export class EntityToDomain {
     domain.titulo = entity.titulo,
     domain.conteudo = entity.conteudo,
     domain.autorId = entity.autor_id,
-    domain.likesCount = entity.likes_count,
     domain.dataCadastro = entity.data_cadastro,
     domain.dataAtualizacao = entity.data_atualizacao
 

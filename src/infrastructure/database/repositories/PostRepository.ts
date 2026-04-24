@@ -1,4 +1,4 @@
-import { Entity, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { IPost } from "../../../domain/interface/IPost";
 import { PostEntity } from "../entities/PostEntity";
 import { Post } from "../../../domain/entities/Post";
@@ -25,12 +25,31 @@ export class PostRepository implements IPost {
     }
 
     async findTopLiked(): Promise<Post[]> {
-        const entities = await this.repo.find({
-            order: { likes_count: "DESC" },
-            take: 10
-        });
+        const { raw, entities } = await this.repo
+            .createQueryBuilder('post')
+            .leftJoin('likes', 'l', 'l.post_id = post.id')
+            .select([
+            'post.id',
+            'post.titulo',
+            'post.conteudo',
+            'post.autor_id',
+            'post.data_cadastro',
+            'post.data_atualizacao'
+            ])
+            .addSelect('COUNT(l.post_id)', 'likes_count')
+            .groupBy('post.id')
+            .orderBy('likes_count', 'DESC')
+            .limit(10)
+            .getRawAndEntities();
 
-        return entities.map(entity => EntityToDomain.toPost(entity));
+        return entities.map((entity, index) => {
+            const likesCount = Number(raw[index].likes_count);
+
+            return {
+            ...EntityToDomain.toPost(entity),
+            likesCount
+            };
+        });
     }
 
     async delete(id: number): Promise<void> {
@@ -49,7 +68,6 @@ export class PostRepository implements IPost {
             titulo: post.titulo,
             conteudo: post.conteudo,
             autor_id: post.autorId,
-            likes_count: post.likesCount,
             data_cadastro: new Date(),
             data_atualizacao: new Date()
         });

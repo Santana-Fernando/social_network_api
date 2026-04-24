@@ -17,10 +17,7 @@ export class PostEntity {
 
   @Column()
   public autor_id!: number;
-
-  @Column()
-  public likes_count!: number;
-
+ 
   @Column()
   public readonly data_cadastro!: Date;
 

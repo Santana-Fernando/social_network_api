@@ -32,14 +32,14 @@ export class PostController {
 
     async findAll(req: Request, res: Response) {
         try {
-        const posts = await this.postService.findAll();
+            const posts = await this.postService.findAll();
 
-        return res.status(200).json(posts);
+            return res.status(200).json(posts);
         } catch (error: any) {
-        return res.status(500).json({
-            message: "Erro ao listar posts",
-            error: error.message
-        });
+            return res.status(500).json({
+                message: "Erro ao listar posts",
+                error: error.message
+            });
         }
     }
 
