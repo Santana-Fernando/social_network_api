@@ -9,19 +9,56 @@ export class PostRepository implements IPost {
     constructor(private readonly repo: Repository<PostEntity>) {}
     
     async findAll(): Promise<Post[]> {
-        const entities = await this.repo.find();
+        const { raw, entities } = await this.repo
+            .createQueryBuilder('post')
+            .leftJoin('likes', 'l', 'l.post_id = post.id')
+            .select([
+            'post.id',
+            'post.titulo',
+            'post.conteudo',
+            'post.autor_id',
+            'post.data_cadastro',
+            'post.data_atualizacao'
+            ])
+            .addSelect('COUNT(l.post_id)', 'likes_count')
+            .groupBy('post.id')
+            .getRawAndEntities();
 
-        return entities.map(entity => EntityToDomain.toPost(entity));
+        return entities.map((entity, index) => {
+            const likesCount = Number(raw[index].likes_count);
+
+            return {
+            ...EntityToDomain.toPost(entity),
+            likesCount
+            };
+        });
     }
 
     async findById(id: number): Promise<Post | null> {
-        const entity = await this.repo.findOne({
-            where: { id }
-        });
+        const { raw, entities } = await this.repo
+            .createQueryBuilder('post')
+            .leftJoin('likes', 'l', 'l.post_id = post.id')
+            .select([
+            'post.id',
+            'post.titulo',
+            'post.conteudo',
+            'post.autor_id',
+            'post.data_cadastro',
+            'post.data_atualizacao'
+            ])
+            .addSelect('COUNT(l.post_id)', 'likes_count')
+            .where('post.id = :id', { id })
+            .groupBy('post.id')
+            .getRawAndEntities();
 
-        if (!entity) return null;
+        if (!entities.length) return null;
 
-        return EntityToDomain.toPost(entity);
+        const likesCount = Number(raw[0].likes_count);
+
+        return {
+            ...EntityToDomain.toPost(entities[0]),
+            likesCount
+        };
     }
 
     async findTopLiked(): Promise<Post[]> {

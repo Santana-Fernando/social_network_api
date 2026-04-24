@@ -8,13 +8,17 @@ import { PostViewModel } from "../ViewModel/PostViewModel";
 import { ViewModelToDomain } from "../../shared/utils/Post/ViewModelToDomain";
 import { DomainToViewModel } from "../../shared/utils/Post/DomainToViewModel";
 import { redisClient } from "../../infrastructure/cache/redisClient";
+import { ILike } from "../../domain/interface/ILike";
 
 @injectable()
 export class PostService implements IPostService {
 
     constructor(
         @inject("IPost")
-        private postRepository: IPost
+        private postRepository: IPost,
+        
+        @inject("ILike")
+        private likeRepository: ILike
     ) {}
 
     async findAll(): Promise<PostViewModel[]> {
@@ -41,7 +45,8 @@ export class PostService implements IPostService {
         try {
             await redisClient.set(
             cacheKey,
-            JSON.stringify(postsViewModel)
+            JSON.stringify(postsViewModel),
+            { EX: 60 }
             );
         } catch (err) {
             console.error('Redis SET error:', err);
@@ -75,7 +80,8 @@ export class PostService implements IPostService {
         try {
             await redisClient.set(
             cacheKey,
-            JSON.stringify(postViewModel)
+            JSON.stringify(postViewModel),
+            { EX: 120 }
             );
         } catch (err) {
             console.error('Redis SET error:', err);
@@ -107,7 +113,8 @@ export class PostService implements IPostService {
         try {
             await redisClient.set(
             cacheKey,
-            JSON.stringify(postsViewModel)
+            JSON.stringify(postsViewModel),
+            { EX: 30 }
             );
         } catch (err) {
             console.error('Redis SET error:', err);
@@ -128,6 +135,11 @@ export class PostService implements IPostService {
                 throw new Error("Operação não permitida: Não é possível excluir um post que não seja seu.");
             }
 
+            await redisClient.del('posts:all');
+            await redisClient.del('posts:top-liked');
+            await redisClient.del(`posts:${post.id}`);
+
+            await this.likeRepository.deslike(idAutor, id)
             await this.postRepository.delete(id);
         } catch (error: any) {
             throw new Error(error.message || 'Erro ao deleta post post');
@@ -146,6 +158,10 @@ export class PostService implements IPostService {
                 throw new Error("Operação não permitida: Não é possível atualizar um post que não seja seu.");
             }
 
+            await redisClient.del('posts:all');
+            await redisClient.del('posts:top-liked');
+            await redisClient.del(`posts:${postFinded.id}`);
+
             await this.postRepository.update(post);
         } catch (error: any) {
             throw new Error(error.message || 'Erro ao deleta post post');
@@ -158,6 +174,8 @@ export class PostService implements IPostService {
 
             var postDomain = ViewModelToDomain.toDomain(post);
             
+            await redisClient.del('posts:all');
+            await redisClient.del('posts:top-liked');
             await this.postRepository.insert(postDomain)
         } catch (error: any) {
             throw new Error(error.message || 'Erro ao criar post');
