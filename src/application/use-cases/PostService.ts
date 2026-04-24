@@ -7,6 +7,7 @@ import { IPostService } from "../interface/IPostService";
 import { PostViewModel } from "../ViewModel/PostViewModel";
 import { ViewModelToDomain } from "../../shared/utils/Post/ViewModelToDomain";
 import { DomainToViewModel } from "../../shared/utils/Post/DomainToViewModel";
+import { redisClient } from "../../infrastructure/cache/redisClient";
 
 @injectable()
 export class PostService implements IPostService {
@@ -17,23 +18,102 @@ export class PostService implements IPostService {
     ) {}
 
     async findAll(): Promise<PostViewModel[]> {
-        const posts = await this.postRepository.findAll()
-        return posts.map(post => DomainToViewModel.toViewModel(post));
+        const cacheKey = 'posts:all';
+
+        try {
+            const cached = await redisClient.get(cacheKey);
+
+            if (cached) {
+                console.log("Tem cache no findAll")
+                return JSON.parse(cached);
+            }
+        } catch (err) {
+            console.error('Redis GET error:', err);
+        }
+
+        // fallback para o banco
+        const posts = await this.postRepository.findAll();
+
+        const postsViewModel = posts.map(post =>
+            DomainToViewModel.toViewModel(post)
+        );
+
+        try {
+            await redisClient.set(
+            cacheKey,
+            JSON.stringify(postsViewModel)
+            );
+        } catch (err) {
+            console.error('Redis SET error:', err);
+        }
+
+        return postsViewModel;
     }
 
     async findById(id: number): Promise<PostViewModel | null> {
+        const cacheKey = `posts:${id}`;
+
+        try {
+            const cached = await redisClient.get(cacheKey);
+
+            if (cached) {
+                console.log("Tem cache no findById")
+                return JSON.parse(cached);
+            }
+        } catch (err) {
+            console.error('Redis GET error:', err);
+        }
+
         const post = await this.postRepository.findById(id);
 
         if (!post) {
             return null;
         }
 
-        return DomainToViewModel.toViewModel(post);
+        const postViewModel = DomainToViewModel.toViewModel(post);
+
+        try {
+            await redisClient.set(
+            cacheKey,
+            JSON.stringify(postViewModel)
+            );
+        } catch (err) {
+            console.error('Redis SET error:', err);
+        }
+
+        return postViewModel;
     }
 
     async findTopLiked(): Promise<PostViewModel[]> {
-        const posts = await this.postRepository.findTopLiked()
-        return posts.map(post => DomainToViewModel.toViewModel(post));
+        const cacheKey = 'posts:top-liked';
+
+        try {
+            const cached = await redisClient.get(cacheKey);
+
+            if (cached) {
+                console.log("Tem cache no findTopLiked")
+                return JSON.parse(cached);
+            }
+        } catch (err) {
+            console.error('Redis GET error:', err);
+        }
+
+        const posts = await this.postRepository.findTopLiked();
+
+        const postsViewModel = posts.map(post =>
+            DomainToViewModel.toViewModel(post)
+        );
+
+        try {
+            await redisClient.set(
+            cacheKey,
+            JSON.stringify(postsViewModel)
+            );
+        } catch (err) {
+            console.error('Redis SET error:', err);
+        }
+
+        return postsViewModel;
     }
 
     async delete(id: number, idAutor: number): Promise<void> {
