@@ -37,6 +37,7 @@ src/
 ## 📦 Funcionalidades
 
 * CRUD de posts
+* Cadasro e Login de usuários
 * Sistema de likes e deslikes
 * Ranking de posts mais curtidos
 * Cache com Redis para otimização de leitura
@@ -124,9 +125,6 @@ docker run -d  --name redis  -p 6379:6379  redis:7
 # instalar dependências
 npm install
 
-# rodar em desenvolvimento
-npm run dev
-
 # build
 npm run build
 
@@ -148,13 +146,28 @@ npm start
 
 ## 📚 Endpoints principais
 
+### 📄 Reações
+
+* `POST /reactions/like` → registra um like e quem deu o like
+* `POST /reactions/deslike` → remove a curtida
+* `GET  /reactions/listagem/:id` → busca a quantidade de likes por id do post
+---
+
 ### 📄 Posts
 
+* `POST /posts/cadastro` → criar post
 * `GET /posts` → lista todos
 * `GET /posts/:id` → busca por ID
 * `GET /posts/top-liked` → ranking
 * `GET /posts/autor/:id` → posts por autor
+* `DELETE /posts/remover/:id` → remover post
+* `PUT /posts/atualizar/:id` → atualizar post
+---
 
+### 📄 Usuários
+
+* `POST /usuarios/cadastro` → criar um usuário de acesso
+* `POST /usuarios/login` → criar logar com usuário para fazer as ações
 ---
 
 ### ❤️ Likes
