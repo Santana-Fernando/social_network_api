@@ -119,6 +119,13 @@ docker run -d  --name redis  -p 6379:6379  redis:7
 
 ---
 
+---
+## Banco de dados
+* crie uma base de dados chamada social_network no postegres
+* rode os scripts do arquivo db.sql, na raiz
+* ajuste o arquivo env.txt para .env e insira as sua credenciais de acesso
+---
+
 ## ▶️ Rodando o projeto
 
 ```bash
