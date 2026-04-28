@@ -12,15 +12,20 @@ export class LikeRepository implements ILike {
     }
 
     async like(autorId: number, postId: number): Promise<void> {
-        const like = await this.repo.create({
+
+        const existingLike = await this.repo.findOne({
+            where: { autor_id: autorId, post_id: postId }
+        });
+
+        if (existingLike) {
+            return;
+        }
+
+        const like = this.repo.create({
             autor_id: autorId,
             post_id: postId,
             data_cadastro: new Date()
         });
-
-        const likes = await this.repo.find({ where: { autor_id: autorId, post_id: postId }});
-
-        if(likes.length > 0) return;
 
         await this.repo.save(like);
     }

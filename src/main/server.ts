@@ -1,12 +1,7 @@
 import app from './app';
-import { AppDataSource } from '../infrastructure/database/data-source';
+import connect from '../interfaces/db/connect';
 
-AppDataSource.initialize()
-  .then(() => {
-
-    console.log('Banco conectado 🚀');
-  })
-  .catch((err) => console.error(err));
+connect()
   
 const PORT = 3000;
 

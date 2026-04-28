@@ -17,8 +17,6 @@ export class LikeController {
             const { postId } = req.body;
             const autorId = (req as any).user?.id;
             
-            await this.likeService.like(autorId, postId);
-
             await this.producer.sendLike({ postId, autorId });
 
             return res.status(201).json({
@@ -38,7 +36,7 @@ export class LikeController {
             const { postId } = req.body;
             const autorId = (req as any).user?.id;
 
-            await this.likeService.deslike(autorId, postId);
+            await this.producer.sendLike({ postId, autorId });
 
             return res.status(201).json({
                 message: "descurtido"

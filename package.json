@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/main/server.ts",
+    "consumer": "ts-node dist/interfaces/workers/consumer.js",
     "build": "tsc",
     "start": "node dist/main/server.js",
     "start:prod": "tsc && node dist/main/server.js"

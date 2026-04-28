@@ -81,7 +81,6 @@ export class PostController {
         try {
             const userId = Number((req as any).user.id);
 
-            console.log(userId)
             const posts = await this.postService.findByAutor(userId);
 
             return res.status(200).json(posts);
