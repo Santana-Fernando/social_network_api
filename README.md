@@ -137,6 +137,9 @@ npm run build
 
 # rodar produção
 npm start
+
+# rodar consumer
+npm run consumer
 ```
 
 ---
