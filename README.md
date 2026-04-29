@@ -140,6 +140,9 @@ npm start
 
 # rodar consumer
 npm run consumer
+
+# caso queira usar o caminho mais fácil e rodar no docker
+docker-compose up --build
 ```
 
 ---
