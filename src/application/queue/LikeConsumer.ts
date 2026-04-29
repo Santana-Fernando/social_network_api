@@ -21,7 +21,7 @@ export class LikeConsumer {
   private readonly queue = 'likes_queue';
 
   async start() {
-    const connection = await amqp.connect('amqp://localhost');
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || "amqp://localhost");
     const channel = await connection.createChannel();
 
     await channel.assertQueue(this.queue, { durable: true });

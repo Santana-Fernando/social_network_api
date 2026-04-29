@@ -36,7 +36,7 @@ export class LikeController {
             const { postId } = req.body;
             const autorId = (req as any).user?.id;
 
-            await this.producer.sendLike({ postId, autorId });
+            await this.producer.sendDeslike({ postId, autorId });
 
             return res.status(201).json({
                 message: "descurtido"

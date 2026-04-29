@@ -4,7 +4,7 @@ export class LikeProducer {
   private queue = 'likes_queue';
 
   private async send(message: any): Promise<void> {
-    const connection = await amqp.connect('amqp://localhost');
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || "amqp://localhost");
     const channel = await connection.createChannel();
 
     await channel.assertQueue(this.queue, { durable: true });
