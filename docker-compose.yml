@@ -58,7 +58,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: Fern@nd01331
+      DB_PASSWORD: ******
       DB_NAME: social_network
 
       REDIS_HOST: redis://redis:6379
@@ -80,7 +80,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: Fern@nd01331
+      DB_PASSWORD: ******
       DB_NAME: social_network
 
       REDIS_HOST: redis://redis:6379

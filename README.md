@@ -140,9 +140,120 @@ npm start
 
 # rodar consumer
 npm run consumer
+```
+# 🚀 Rodando a aplicação com Docker + Kubernetes (Load Balancer)
 
-# caso queira usar o caminho mais fácil e rodar no docker
-docker-compose up --build
+---
+
+## ⚙️ Pré-requisitos
+
+- Docker
+- Docker Compose
+- kubectl
+- kind
+
+---
+
+## 🧱 Passo a passo
+
+### 1. Subir infraestrutura (OBRIGATÓRIO)
+
+```bash
+docker-compose up -d
+```
+
+---
+
+### 2. Criar cluster Kubernetes (se ainda não existir)
+
+```bash
+kind create cluster --name api-cluster
+```
+
+---
+
+### 3. Garantir que está no cluster correto
+
+```bash
+kubectl config use-context kind-api-cluster
+```
+
+---
+
+### 4. Build da imagem da API
+
+```bash
+docker build -t minha-api:latest .
+```
+
+---
+
+### 5. Carregar imagem no cluster
+
+```bash
+kind load docker-image minha-api:latest --name api-cluster
+```
+
+---
+
+### 6. Subir a API (Deployment com 3 pods)
+
+```bash
+kubectl apply -f api-deployment.yaml
+```
+
+---
+
+### 7. Subir o Service (Load Balancer)
+
+```bash
+kubectl apply -f api-service.yaml
+```
+
+---
+
+### 8. Reiniciar pods (IMPORTANTE após build)
+
+```bash
+kubectl rollout restart deployment api-deployment
+```
+
+---
+
+### 9. Verificar pods
+
+```bash
+kubectl get pods
+```
+
+---
+
+### 10. Verificar services
+
+```bash
+kubectl get svc
+```
+
+---
+
+### 11. Acessar aplicação
+
+```bash
+kubectl port-forward svc/api-service 3000:80
+```
+
+Acesse no navegador:
+
+👉 http://localhost:3000/docs
+
+---
+
+## 🔁 Atualização rápida (quando mudar código)
+
+```bash
+docker build -t minha-api:latest .
+kind load docker-image minha-api:latest --name api-cluster
+kubectl rollout restart deployment api-deployment
 ```
 
 ---
