@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Fern@nd01331
+      POSTGRES_PASSWORD: *******
       POSTGRES_DB: social_network
     ports:
       - "5432:5432"
@@ -58,7 +58,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: ******
+      DB_PASSWORD: *******
       DB_NAME: social_network
 
       REDIS_HOST: redis://redis:6379
@@ -80,7 +80,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: ******
+      DB_PASSWORD: *******
       DB_NAME: social_network
 
       REDIS_HOST: redis://redis:6379

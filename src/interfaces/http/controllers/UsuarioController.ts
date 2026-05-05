@@ -38,8 +38,8 @@ export class UsuarioController {
             });
 
         } catch (error: any) {
-            return res.status(500).json({
-                message: "Erro interno no servidor",
+            return res.status(404).json({
+                message: "Erro ao logar",
                 error: error.message
             });
         }

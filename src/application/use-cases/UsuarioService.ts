@@ -24,13 +24,13 @@ export class UsuarioService implements IUsuarioService {
         const usuario = await this.usuarioRepository.findByEmail(email);
 
         if (!usuario) {
-        throw new Error("Usuário não encontrado");
+            throw new Error("Login ou senha inválidos");
         }
 
         const senhaValida = await BCrypter.compare(senha, usuario.senha);
 
         if (!senhaValida) {
-        throw new Error("Senha inválida");
+            throw new Error("Login ou senha inválidos");
         }
 
         const token = JwtService.generateToken({
